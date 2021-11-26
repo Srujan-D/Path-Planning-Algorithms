@@ -87,3 +87,87 @@ else
         f(current) = inf;
     end
 end
+
+path = [path, goal]
+    
+
+open
+open_score
+parent
+g
+f
+path
+
+ab = neighbors(4, 6, 6)
+
+
+x = [2, 4]
+y = [1 2 3; 0 4 5]
+[g,h ] = min(y(x))
+x(h)
+
+function [row, col] = index_return(ind, n, m)
+    if mod(ind, n) ~= 0
+        row = mod(ind, n);
+    else
+        row = n;
+    end
+    col = ((ind - row)/n) + 1;
+end
+
+function [flag] = IsInGrid(n, m, i, j)
+    flag = (i >= 1 && i <= m && j >= 1 && j <= n);
+end
+
+function [neighbor] = neighbors(ind, n, m)
+    neighbor = [];
+    if mod(n*m - ind, n) >= 1
+        neighbor = [neighbor, ind+1];
+    end
+    if mod(n*m - ind, n) ~= 5
+        neighbor = [neighbor, ind-1];
+    end
+    if ind < n*m - n + 1
+        neighbor = [neighbor, ind+n];
+    end
+    if ind > n
+        neighbor = [neighbor, ind-n];
+    end
+end
+
+function cost = heuristic(ind, goal, n, m)
+    [ind1x,ind1y] = index_return(ind, n, m);
+    [ind2x,ind2y] = index_return(goal, n, m);
+    cost = abs(ind1x - ind2x) + abs(ind1y - ind2y);
+end
+
+function [grid] = CheckObs(grid)
+    dim = size(grid);
+    n = dim(1);
+    m = dim(2);
+    for i = 1:n
+        for j = 1:m
+            index = (j-1)*n + i;
+            if index <= n*m - n && index > n && mod(n*m - index, n) ~= 5 && mod(n*m - index, n) ~= 0 && isnan(grid(index+1)) && isnan(grid(index-1)) && isnan(grid(index+n)) && isnan(grid(index-n))
+                grid(i, j) = nan;
+            elseif mod(n*m - index, n) == 5 && index ~= 1 && index ~= n*m - n + 1 && isnan(grid(index+1)) && isnan(grid(index-n)) && isnan(grid(index+n))
+                grid(i, j) = nan;
+            elseif mod(n*m - index, n) == 0 && index ~= n && index ~= n*m && isnan(grid(index-1)) && isnan(grid(index+1)) && isnan(grid(index-n))
+                grid(i, j) = nan;
+            elseif index < n && index > 1 && isnan(grid(index+1)) && isnan(grid(index-1)) && isnan(grid(index+n))
+                grid(i, j) = nan;
+            elseif index < n*m && index > n*m - n && isnan(grid(index+1)) && isnan(grid(index-1)) && isnan(grid(index-n))
+                grid(i, j) = nan;
+            elseif index == 1 && isnan(grid(index+1)) && isnan(grid(index+n))
+                grid(i, j) = nan;
+            elseif index == n && isnan(grid(index-1)) && isnan(grid(index+n))
+                grid(i, j) = nan;
+            elseif index == n*m-n+1 && isnan(grid(index+1)) && isnan(grid(index-n))
+                grid(i, j) = nan;
+            elseif index == n*m && isnan(grid(index-1)) && isnan(grid(index-n))
+                grid(i, j) = nan;
+            end
+        end
+    end
+end
+
